@@ -6,12 +6,7 @@ local lspconfig = require("lspconfig")
 local on_attach = Util.lsp.on_attach
 local capabilities = Util.lsp.capabilities
 
--- 🧹 vue_ls deaktivieren, falls LazyVim oder Mason ihn lädt
-if lspconfig.vue_ls then
-  lspconfig.vue_ls = nil
-end
-
--- 🪄 dynamisch globaler npm path
+-- dynamisch globaler npm path
 local npm_global = vim.fn.trim(vim.fn.system("npm root -g"))
 
 if vim.fn.isdirectory(npm_global .. "/typescript/lib") == 0 then
@@ -19,11 +14,11 @@ if vim.fn.isdirectory(npm_global .. "/typescript/lib") == 0 then
   print("typescript sdk nicht gefunden")
 end
 
--- ⚡ TypeScript / JavaScript
+-- TypeScript / JavaScript
 lspconfig.ts_ls.setup({
   on_attach = on_attach,
   capabilities = capabilities,
-  filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" }, -- ohne vue!
+  filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "vue" },
   init_options = {
     plugins = {
       {
@@ -35,8 +30,32 @@ lspconfig.ts_ls.setup({
   },
 })
 --
+--  Python (pyright)
+local venv_python = vim.fn.getcwd() .. "/.venv/bin/python"
 
--- ⚡ Volar für Vue
+if vim.fn.executable(venv_python) == 1 then
+  vim.g.python3_host_prog = venv_python
+
+  -- LSP für IntelliSense
+  lspconfig.pyright.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+      python = {
+        pythonPath = venv_python,
+      },
+    },
+  })
+  --
+else
+  lspconfig.pyright.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+  })
+  --
+end
+
+-- Volar für Vue
 --[[lspconfig.volar.setup({
   on_attach = on_attach,
   capabilities = capabilities,
@@ -58,7 +77,7 @@ lspconfig.ts_ls.setup({
 })]]
 --
 
--- ⚡ Sonstige Basisserver
+-- Sonstige Basisserver
 for _, lsp in ipairs({ "html", "cssls", "eslint", "clangd" }) do
   lspconfig[lsp].setup({
     on_attach = on_attach,

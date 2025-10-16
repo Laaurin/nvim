@@ -9,7 +9,12 @@ return {
     "mason-org/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "pyright", "ts_ls", "omnisharp" },
+        ensure_installed = { "lua_ls", "ts_ls", "omnisharp", "pyright" },
+        automatic_enable = {
+          exclude = {
+            "pyright", --manuell starten um python aus .venv zu nutzen
+          },
+        },
       })
     end,
   },
