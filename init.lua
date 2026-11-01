@@ -33,6 +33,7 @@ local servers = {
 	"lua_ls",
 	"ts_ls",
 	"pyright",
+	"vue_ls",
 }
 
 for _, server in ipairs(servers) do
